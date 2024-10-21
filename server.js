@@ -40,7 +40,7 @@ async function authenticateUser($username, $password, retries = MAX_RETRIES) {
             console.log(`Attempt ${attempt}: Authenticating user ${$username}...`);
             
             // Create a new incognito context and page
-            context = await browser.createIncognitoBrowserContext();
+            context = await browser.createBrowserContext();
             page = await context.newPage();
             await page.setRequestInterception(true);
 
