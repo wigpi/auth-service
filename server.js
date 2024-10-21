@@ -67,7 +67,8 @@ async function authenticateUser($username, $password, retries = MAX_RETRIES) {
                 cookie.expires = new Date().getTime() + 2400000;
             });
 
-            return { status: 'success', cookies };
+            console.log('User authenticated successfully');
+            return { status: 'success', data: { cookies } };
 
         } catch (error) {
             if (attempt < retries) {
