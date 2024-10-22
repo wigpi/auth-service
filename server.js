@@ -67,14 +67,14 @@ async function authenticateUser($username, $password, retries = MAX_RETRIES) {
                 cookie.expires = new Date().getTime() + 2400000;
             });
 
-            console.log('User authenticated successfully');
+            console.log(`User ${$username} authenticated successfully`);
             return { status: 'success', data: { cookies } };
 
         } catch (error) {
             if (attempt < retries) {
                 console.warn(`Attempt ${attempt} failed. Retrying...`);
             } else {
-                console.error('Max retries reached. Failed to authenticate.');
+                console.error(`Max retries reached. Failed to authenticate user ${$username}`, error);
                 throw new Error('Failed to authenticate after maximum retries');
             }
         } finally {
@@ -100,9 +100,7 @@ app.post('/auth', async (req, res) => {
         const result = await authenticateUser($username, $password);
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(result));
-        console.log('User authenticated successfully');
     } catch (error) {
-        console.error('Error in /auth:', error);
         res.status(500).send('Failed to authenticate, please check your credentials');
     }
 });
