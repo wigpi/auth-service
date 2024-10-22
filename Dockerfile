@@ -20,5 +20,14 @@ RUN apk add --no-cache \
     freetype \
     harfbuzz \
     nss \
-    ttf-freefont
-    
+    ttf-freefont \
+    && rm -rf /var/cache/*
+
+# Set the Chromium executable path for Puppeteer
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Tell Docker about the port we'll run on.
+EXPOSE 3000
+
+# Command to run the server
+CMD [ "node", "server.js" ]
