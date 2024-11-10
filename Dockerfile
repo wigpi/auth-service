@@ -1,20 +1,24 @@
-# Use the official Node.js 20 image as a parent image
-FROM node:20-alpine
+# Stage 1: Build dependencies
+FROM node:20-alpine AS build
 LABEL org.opencontainers.image.description "A simple Node.js web server that uses Puppeteer to auth users to apereo cas of wigor"
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the application files
+# Copy package.json and package-lock.json to install dependencies
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of your app's source code from your host to your image filesystem.
+# Copy the rest of the application files
 COPY . .
 
-# Puppeteer dependencies
+# Stage 2: Puppeteer runtime
+FROM node:20-alpine AS puppeteer
+WORKDIR /app
+
+# Install only the necessary Puppeteer dependencies
 RUN apk add --no-cache \
     chromium \
     freetype \
@@ -26,7 +30,10 @@ RUN apk add --no-cache \
 # Set the Chromium executable path for Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Tell Docker about the port we'll run on.
+# Copy node_modules and application code from the build stage
+COPY --from=build /app /app
+
+# Expose the port your app runs on
 EXPOSE 3000
 
 # Command to run the server
